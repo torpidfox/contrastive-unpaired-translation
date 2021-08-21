@@ -9,6 +9,8 @@ from PIL import Image
 import torchvision.transforms as transforms
 from abc import ABC, abstractmethod
 
+from custom_transforms.gaussian_noise import AddGaussianNoise
+
 
 class BaseDataset(data.Dataset, ABC):
     """This class is an abstract base class (ABC) for datasets.
@@ -122,6 +124,9 @@ def get_transform(opt, params=None, grayscale=False, method=Image.BICUBIC, conve
         elif 'flip' in params:
             transform_list.append(transforms.Lambda(lambda img: __flip(img, params['flip'])))
 
+    if noise:
+        transform_list.append(AddGaussianNoise(0.0, 0.05))
+    
     if convert:
         transform_list += [transforms.ToTensor()]
         if grayscale:
